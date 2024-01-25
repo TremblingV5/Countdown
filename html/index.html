@@ -36,7 +36,7 @@
 		<div class="row">
 			<div class="demo col-sm-12">
 				<center>
-					<h1 class=" alert alert-success">又是忙碌的一天，请按时下班~</h1>
+					<h1 class=" alert alert-success">又是忙碌的一天，请按时下班~~</h1>
 				</center>
 
 				<center>
@@ -46,6 +46,7 @@
 					<div class=" alert alert-danger">
 						<span id="clock"></span>
 					</div>
+                    <a href="javascript:void(0);" onclick="setTime()">自定义下班时间</a>
 				</center>
 			</div>
 			<div >
@@ -63,32 +64,45 @@
 					var dots=12;
 
 					function clock(){
-					var time=new Date ();
-					var secs=time.getSeconds();
-					var sec=-1.57 + Math.PI * secs/30;
-					var mins=time.getMinutes();
-					var min=-1.57 + Math.PI * mins/30;
-					var hr=time.getHours();
-					var hrs=-1.57 + Math.PI * hr/6 + Math.PI*parseInt(time.getMinutes())/360;
-					
-					setTimeout('clock()',50);
+                        var time=new Date ();
+                        var secs=time.getSeconds();
+                        var sec=-1.57 + Math.PI * secs/30;
+                        var mins=time.getMinutes();
+                        var min=-1.57 + Math.PI * mins/30;
+                        var hr=time.getHours();
+                        var hrs=-1.57 + Math.PI * hr/6 + Math.PI*parseInt(time.getMinutes())/360;
+                        
+                        setTimeout('clock()',50);
 					}
 					window.onload=clock;
 				</script>
 
 				<script>
-					var hourtime="18:00:00";
+                    var saved = localStorage.getItem("hourtime");
+                    if (saved == null) {
+                        var hourtime = "18:00:00";
+                    } else {
+                        var hourtime = saved;
+                    }
+					
 					var weeks = new Array("周日", "周一", "周二", "周三", "周四", "周五", "周六");
-					var holidays2021 = {
-						"劳动节": [get_time("2021/05/01 00:00:00"), get_time("2021/05/05 23:59:59")],
-						"端午节": [get_time("2021/06/12 00:00:00"), get_time("2021/06/14 23:59:59")],
-						"中秋节": [get_time("2021/09/19 00:00:00"), get_time("2021/09/21 23:59:59")],
-						"国庆节": [get_time("2021/10/01 00:00:00"), get_time("2021/10/07 23:59:59")],
+					var holidays = {
+                        "除夕": get_day("2024/02/09"),
+                        "过年": [get_time("2024/02/10 00:00:00"), get_time("2024/02/17 23:59:59")],
+                        "清明节": [get_time("2024/04/04 00:00:00"), get_time("2024/04/06 23:59:59")],
+						"劳动节": [get_time("2024/05/01 00:00:00"), get_time("2021/05/05 23:59:59")],
+						"端午节": [get_time("2024/06/08 00:00:00"), get_time("2024/06/10 23:59:59")],
+						"中秋节": [get_time("2024/09/14 00:00:00"), get_time("2024/09/17 23:59:59")],
+						"国庆节": [get_time("2024/10/01 00:00:00"), get_time("2021/10/07 23:59:59")],
 					};
 					var holiday = null;
 
-					function get_time(a) {
-						return new Date(a).getTime() / 1000; 
+                    function get_time(a) {
+                        return new Date(a).getTime() / 1000;
+                    }
+
+					function get_day(a) {
+						return [new Date(a + " 00:00:00").getTime() / 1000, new Date(a + " 23:59:59").getTime() / 1000]
 					}
 
 					function displayTime() {
@@ -102,8 +116,8 @@
 							
 							var day = now.getDay();
 							var nowTimestamp = new Date().getTime() / 1000;
-							for(var key in holidays2021){
-								if (nowTimestamp > holidays2021[key][0] && nowTimestamp < holidays2021[key][1]) {
+							for(var key in holidays){
+								if (nowTimestamp > holidays[key][0] && nowTimestamp < holidays[key][1]) {
 									holiday = key;
 								}
 							}
@@ -128,12 +142,24 @@
 							} else if ((o<0&&m<0&&s<0)){
 								elt.innerHTML = "你已经下班了，为什么还不回家？";
 							} else {
-								elt.innerHTML =o + "小时:" + m + "分:" + s + "秒:" + ms.charAt(0);
+								elt.innerHTML = o + "小时:" + m + "分:" + s + "秒:" + ms.charAt(0);
 							}
 							setTimeout(displayTime, 100);
 						}
 					}
 					displayTime();
+
+                    function setTime() {
+                        var curr = localStorage.getItem("hourtime");
+                        if (curr == null) {
+                            curr = "18:00:00";
+                        }
+                        var value = prompt("设置下班时间，格式参考：18:00:00", curr);
+                        if (value != null) {
+                            localStorage.setItem("hourtime", value);
+                            location.reload();
+                        }
+                    }
 				</script>
 			</div>
 		</div>
