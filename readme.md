@@ -29,3 +29,14 @@
 鄙人不善前端，所以非常欢迎能对页面或是逻辑代码进行优化！
 
 **希望各位工作中能多点乐趣，工作也能早点做完做好。**
+
+## 功能配置
+
+### 自定义域名
+
+在`./nginx/conf.d/default.conf`中，配置`server->server_name`为自定义的域名即可。
+
+### 自部署时天气API KEY和SECRET配置
+
+1. 在此[网站](https://tianqiapi.com/index/doc?version=day)注册账号，并获取appid和appsecret
+2. 在在`./nginx/conf.d/default.conf`中，配置`add_header Set-Cookie`的内容为`appid={appid},appsecret={appsecret}; path=/`

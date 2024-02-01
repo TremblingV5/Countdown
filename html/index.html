@@ -5,6 +5,9 @@
 <title>你要下班了！</title>
 <link rel="stylesheet" type="text/css" href="./static/css/bootstrap.min.css" />
 <style type="text/css">
+    :root {
+        --background-image: #000;
+    }
 	#clock {
 		font: bold 24pt sans;
 		background-color: #f5f5f5;
@@ -28,10 +31,16 @@
 		padding:5px;
 		border:1px solid #d4d4d4;
 	}
+    table {
+        text-align: center;
+    }
+    #background {
+        background-size: cover;
+        background-image: var(--background-image);
+    }
 </style>
-
 </head>
-<body>
+<body id="background">
 	<div class="container">
 		<div class="row">
 			<div class="demo col-sm-12">
@@ -162,8 +171,95 @@
                     }
 				</script>
 			</div>
+            <table class="table table-condensed">
+                <thead>
+                    <tr>
+                        <th>更新时间</th>
+                        <th>所在城市</th>
+                        <th>湿度</th>
+                        <th>空气质量</th>
+                        <th>天气</th>
+                        <th>温度</th>
+                        <th>最高温度</th>
+                        <th>最低温度</th>
+                        <th>风向</th>
+                        <th>风力</th>
+                        <th>风速</th>
+                        <th>气压</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td id="update_time"></td>
+                        <td id="city"></td>
+                        <td id="humidity"></td>
+                        <td id="air"></td>
+                        <td id="wea"></td>
+                        <td id="tem"></td>
+                        <td id="tem_day"></td>
+                        <td id="tem_night"></td>
+                        <td id="win"></td>
+                        <td id="win_speed"></td>
+                        <td id="win_meter"></td>
+                        <td id="pressure"></td>
+                    </tr>
+                </tbody>
+              </table>
 		</div>
 	</div>
 	
 </body>
 </html>
+<script>
+    function parseWeather(weather) {
+        const backgroundElement = document.querySelector("html");
+        // backgroundElement.style.setProperty("--background-image", "url('./static/imgs/" + result.wea_img + ".jpg')");
+        document.getElementById("update_time").innerHTML = result.update_time;
+        document.getElementById("city").innerHTML = result.city;
+        document.getElementById("humidity").innerHTML = result.humidity;
+        document.getElementById("air").innerHTML = result.air;
+        document.getElementById("wea").innerHTML = result.wea;
+        document.getElementById("tem").innerHTML = result.tem;
+        document.getElementById("tem_day").innerHTML = result.tem_day;
+        document.getElementById("tem_night").innerHTML = result.tem_night;
+        document.getElementById("win").innerHTML = result.win;
+        document.getElementById("win_speed").innerHTML = result.win_speed;
+        document.getElementById("win_meter").innerHTML = result.win_meter;
+        document.getElementById("pressure").innerHTML = result.pressure;
+    }
+
+    function getWeather() {
+        var cookies = document.cookie.split(";");
+        var cookies = cookies[0].split(",")
+
+        const appid = cookies[0].split("=")[1];
+        const appsecret = cookies[1].split("=")[1];
+
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const result = JSON.parse(xhr.responseText);
+                const timestamp = new Date().getTime();
+                localStorage.setItem("weather", JSON.stringify(result));
+                localStorage.setItem("weather_expire", timestamp + 1000 * 60 * 60);
+                parseWeather(result);
+            }
+        };
+        xhr.open('GET', 'http://v1.yiketianqi.com/free/day?appid=' + appid + '&appsecret=' + appsecret + '&unescape=1', true);
+        xhr.send();
+    }
+
+    var weather_expire = localStorage.getItem("weather_expire");
+    var now = new Date().getTime();
+    if (weather_expire === undefined || weather_expire === null || weather_expire < now) {
+        localStorage.removeItem("weather");
+    }
+
+    var weather = localStorage.getItem("weather");
+    if (weather != null) {
+        var result = JSON.parse(weather);
+        parseWeather(result);
+    } else {
+        getWeather();
+    }
+</script>
