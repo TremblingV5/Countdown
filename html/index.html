@@ -2,9 +2,9 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="referrer" content="no-referrer" />
 <title>你要下班了！</title>
 <link rel="stylesheet" type="text/css" href="./static/css/bootstrap.min.css" />
-<link rel="stylesheet" type="text/css" href="./static/css/audio_player.css">
 <style type="text/css">
     :root {
         --background-image: #000;
@@ -39,9 +39,24 @@
         background-size: cover;
         background-image: var(--background-image);
     }
+    #totop{
+        text-align:center;
+        line-height:50px;
+        font-size:25px;
+        display: block;
+        width:50px;
+        height:50px;
+        position: fixed;
+        top:50px;
+        right: 50px;
+        border-radius: 10px;
+    }
+    .justify-content-center {
+        padding-top: 10px;
+    }
 </style>
 <script src="./static/js/jquery.min.js"></script>
-<script src="./static/js/audio_player.js"></script>
+<script src="./static/js/bootstrap.min.js"></script>
 </head>
 <body id="background">
 	<div class="container">
@@ -214,7 +229,7 @@
                     <div id="audio_info">
 
                     </div>
-                    <button class="btn btn-success btn-sm" onclick="loadAudio()">换一首听</button>
+                    <button class="btn btn-success btn-sm" onclick="reloadAudio()">换一首听</button>
                     <div class="card-body">
                         <audio id="audio" src="" onended="reloadAudio()" controls autoplay></audio>
                     </div>
@@ -242,9 +257,441 @@
                     }
                 </script>
             </div>
+            <div id="hot" class="card col-sm-12" style="padding-top: 10px;">
+                <ul class="nav nav-tabs" id="myTab" role="tablist" style="padding-top: 10px;">
+                    <li class="nav-item active" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#juejin" type="button" role="tab" aria-controls="juejin" onclick="request('稀土掘金')" aria-selected="true">
+                          稀土掘金热榜
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="home-tab" data-toggle="tab" data-target="#bilibili" type="button" role="tab" aria-controls="bilibili" onclick="request('哔哩哔哩')" aria-selected="false">
+                            B站热搜
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#weibo" type="button" role="tab" aria-controls="weibo" onclick="request('微博热搜')" aria-selected="false">
+                            微博热搜
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#zhihu" type="button" role="tab" aria-controls="zhihu" onclick="request('知乎')" aria-selected="false">
+                            知乎热搜
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#baidu" type="button" role="tab" aria-controls="baidu" onclick="request('百度')" aria-selected="false">
+                          百度热搜
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#txnews" type="button" role="tab" aria-controls="txnews" onclick="request('腾讯新闻')" aria-selected="false">
+                          腾讯新闻热榜
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#tieba" type="button" role="tab" aria-controls="tieba" onclick="request('百度贴吧')" aria-selected="false">
+                          贴吧热搜
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#ithome" type="button" role="tab" aria-controls="ithome" onclick="request('IT之家')" aria-selected="false">
+                          IT之家热榜
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#thepaper" type="button" role="tab" aria-controls="thepaper" onclick="request('澎湃新闻')" aria-selected="false">
+                          澎湃新闻热榜
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#toutiao" type="button" role="tab" aria-controls="toutiao" onclick="request('今日头条')" aria-selected="false">
+                          今日头条热榜
+                        </button>
+                    </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="juejin" role="tabpanel" aria-labelledby="juejin-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="bilibili" role="tabpanel" aria-labelledby="bilibili-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="weibo" role="tabpanel" aria-labelledby="weibo-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="zhihu" role="tabpanel" aria-labelledby="zhihu-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="baidu" role="tabpanel" aria-labelledby="baidu-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="douyin" role="tabpanel" aria-labelledby="douyin-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="doubannew" role="tabpanel" aria-labelledby="doubannew-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="tieba" role="tabpanel" aria-labelledby="tieba-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="sspai" role="tabpanel" aria-labelledby="sspai-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="ithome" role="tabpanel" aria-labelledby="sspai-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="thepaper" role="tabpanel" aria-labelledby="sspai-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="toutiao" role="tabpanel" aria-labelledby="toutiao-tab">
+                        
+                    </div>
+                    <div class="tab-pane fade show" id="txnews" role="tabpanel" aria-labelledby="txnews-tab">
+                        
+                    </div>
+                </div>
+                <script>
+                    function isExpire(platform) {
+                        const timestamp = new Date().getTime();
+                        const target = localStorage.getItem(`${platform}_expire`);
+                        if (target === undefined || target === null || timestamp > target) {
+                            localStorage.removeItem(`${platform}_expire`);
+                            localStorage.removeItem(platform);
+                            return true;
+                        }
+                        return false;
+                    }
+
+                    function request(platform) {
+                        if (!isExpire(platform)) {
+                            const result = localStorage.getItem(platform);
+                            const data = JSON.parse(result);
+                            if (platform === '哔哩哔哩') {
+                                parseImageArticlesRows(data, 'bilibili');
+                            }
+                            if (platform === '百度') {
+                                parseImageArticlesRows1(data, 'baidu');
+                            }
+                            if (platform === '百度贴吧') {
+                                parseImageArticlesRows1(data, 'tieba');
+                            }
+                            if (platform === '稀土掘金') {
+                                parseArticlesRows(data, 'juejin');
+                            }
+                            if (platform === '知乎') {
+                                parseImageArticlesRows1(data, 'zhihu');
+                            }
+                            if (platform === 'IT之家') {
+                                parseArticlesRows(data, 'ithome');
+                            }
+                            if (platform === '澎湃新闻') {
+                                parseImageArticlesRows2(data, 'thepaper');
+                            }
+                            if (platform === '今日头条') {
+                                parseImageArticlesRows2(data, 'toutiao');
+                            }
+                            if (platform === '微博热搜') {
+                                parseArticlesRows1(data, 'weibo');
+                            }
+                            if (platform === '腾讯新闻') {
+                                parseArticlesRows1(data, 'txnews');
+                            }
+                            return ;
+                        }
+
+                        const xhr = new XMLHttpRequest();
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === 4 && xhr.status === 200) {
+                                const result = JSON.parse(xhr.responseText);
+                                const timestamp = new Date().getTime();
+                                localStorage.setItem(platform, JSON.stringify(result));
+                                localStorage.setItem(`${platform}_expire`, timestamp + 1000 * 60 * 60);
+                                if (platform === '哔哩哔哩') {
+                                    parseImageArticlesRows(result, 'bilibili');
+                                }
+                                if (platform === '百度') {
+                                    parseImageArticlesRows1(result, 'baidu');
+                                }
+                                if (platform === '百度贴吧') {
+                                    parseImageArticlesRows1(result, 'tieba');
+                                }
+                                if (platform === '稀土掘金') {
+                                    parseArticlesRows(result, 'juejin');
+                                }
+                                if (platform === '知乎') {
+                                    parseImageArticlesRows1(result, 'zhihu');
+                                }
+                                if (platform === 'IT之家') {
+                                    parseArticlesRows(result, 'ithome');
+                                }
+                                if (platform === '澎湃新闻') {
+                                    parseImageArticlesRows2(result, 'thepaper');
+                                }
+                                if (platform === '今日头条') {
+                                    parseImageArticlesRows2(result, 'toutiao');
+                                }
+                                if (platform === '微博热搜') {
+                                    parseArticlesRows1(result, 'weibo');
+                                }
+                                if (platform === '腾讯新闻') {
+                                    parseArticlesRows1(result, 'txnews');
+                                }
+                            }
+                        };
+                        xhr.open('GET', `https://api.pearktrue.cn/api/dailyhot/?title=${platform}`, true);
+                        xhr.send();
+                    }
+
+                    function parseArticlesRows(result, tag) {
+                        const data = result.data;
+                        for (var i = 0; i < data.length; i ++) {
+                            var title = data[i].title;
+                            var url = data[i].url;
+                            var hot = data[i].hot;
+
+                            var card = document.createElement("div");
+                            card.className = "card";
+
+                            var row = document.createElement("div");
+                            row.className = "row no-gutters";
+                            
+                            var bodyDiv = document.createElement("div");
+                            bodyDiv.className = "col-md-10";
+
+                            var cardBody = document.createElement("div");
+                            cardBody.className = "card-body";
+
+                            var cardTitle = document.createElement("h5");
+                            cardTitle.className = "card-title";
+
+                            var cardLink = document.createElement("a");
+                            cardLink.href = url;
+                            cardLink.target = "_blank";
+                            cardLink.innerText = `#${i + 1}： ${title}`
+                            cardTitle.appendChild(cardLink);
+
+                            var cardDescription = document.createElement("div");
+                            cardDescription.className = "card-text";
+                            cardDescription.innerText = `当前热度：${hot}`;
+
+                            cardBody.appendChild(cardTitle);
+                            cardBody.appendChild(cardDescription);
+                            bodyDiv.appendChild(cardBody);
+                            row.appendChild(bodyDiv);
+                            card.appendChild(row);
+
+                            document.getElementById(tag).appendChild(card);
+                        }
+                    }
+
+                    function parseArticlesRows1(result, tag) {
+                        const data = result.data;
+                        for (var i = 0; i < data.length; i ++) {
+                            var title = data[i].title;
+                            var url = data[i].url;
+                            var hot = data[i].hot;
+                            var desc =  data[i].desc;
+
+                            var card = document.createElement("div");
+                            card.className = "card";
+
+                            var row = document.createElement("div");
+                            row.className = "row no-gutters";
+                            
+                            var bodyDiv = document.createElement("div");
+                            bodyDiv.className = "col-md-10";
+
+                            var cardBody = document.createElement("div");
+                            cardBody.className = "card-body";
+
+                            var cardTitle = document.createElement("h5");
+                            cardTitle.className = "card-title";
+
+                            var cardLink = document.createElement("a");
+                            cardLink.href = url;
+                            cardLink.target = "_blank";
+                            cardLink.innerText = `#${i + 1}： ${title}`
+                            cardTitle.appendChild(cardLink);
+
+                            var cardDescription = document.createElement("div");
+                            cardDescription.className = "card-text";
+                            cardDescription.innerText = `${desc} - 当前热度：${hot}`;
+
+                            cardBody.appendChild(cardTitle);
+                            cardBody.appendChild(cardDescription);
+                            bodyDiv.appendChild(cardBody);
+                            row.appendChild(bodyDiv);
+                            card.appendChild(row);
+
+                            document.getElementById(tag).appendChild(card);
+                        }
+                    }
+
+                    function parseImageArticlesRows(result, tag) {
+                        const data = result.data;
+                        for (var i = 0; i < data.length; i ++) {
+                            var title = data[i].title;
+                            var desc = data[i].desc;
+                            var pic = data[i].pic;
+                            var owner = data[i].owner.name;
+                            var ownerUrl = data[i].owner.url;
+                            var url = data[i].mobileUrl;
+                            var hot = data[i].hot;
+
+                            var card = document.createElement("div");
+                            card.className = "card";
+
+                            var row = document.createElement("div");
+                            row.className = "row no-gutters";
+
+                            var imgDiv = document.createElement("div");
+                            imgDiv.className = "col-md-2 justify-content-center";
+
+                            var img = document.createElement("img");
+                            img.src = pic;
+                            img.className = "col-md-12";
+                            imgDiv.appendChild(img);
+                            row.appendChild(imgDiv);
+                            
+                            var bodyDiv = document.createElement("div");
+                            bodyDiv.className = "col-md-10";
+
+                            var cardBody = document.createElement("div");
+                            cardBody.className = "card-body";
+
+                            var cardTitle = document.createElement("h5");
+                            cardTitle.className = "card-title";
+
+                            var cardLink = document.createElement("a");
+                            cardLink.href = url;
+                            cardLink.target = "_blank";
+                            cardLink.innerText = `#${i + 1}： ${title} - ${owner}`
+                            cardTitle.appendChild(cardLink);
+
+                            var cardDescription = document.createElement("div");
+                            cardDescription.className = "card-text";
+                            cardDescription.innerText = `${desc} - 当前热度：${hot}`;
+
+                            cardBody.appendChild(cardTitle);
+                            cardBody.appendChild(cardDescription);
+                            bodyDiv.appendChild(cardBody);
+                            row.appendChild(bodyDiv);
+                            card.appendChild(row);
+
+                            document.getElementById(tag).appendChild(card);
+                        }
+                    }
+
+                    function parseImageArticlesRows1(result, tag) {
+                        const data = result.data;
+                        for (var i = 0; i < data.length; i ++) {
+                            var title = data[i].title;
+                            var desc = data[i].desc;
+                            var pic = data[i].pic;
+                            var url = data[i].mobileUrl;
+                            var hot = data[i].hot;
+
+                            var card = document.createElement("div");
+                            card.className = "card";
+
+                            var row = document.createElement("div");
+                            row.className = "row no-gutters";
+
+                            var imgDiv = document.createElement("div");
+                            imgDiv.className = "col-md-2 justify-content-center";
+
+                            var img = document.createElement("img");
+                            img.src = pic;
+                            img.className = "col-md-12";
+                            imgDiv.appendChild(img);
+                            row.appendChild(imgDiv);
+                            
+                            var bodyDiv = document.createElement("div");
+                            bodyDiv.className = "col-md-10";
+
+                            var cardBody = document.createElement("div");
+                            cardBody.className = "card-body";
+
+                            var cardTitle = document.createElement("h5");
+                            cardTitle.className = "card-title";
+
+                            var cardLink = document.createElement("a");
+                            cardLink.href = url;
+                            cardLink.target = "_blank";
+                            cardLink.innerText = `#${i + 1}： ${title}`
+                            cardTitle.appendChild(cardLink);
+
+                            var cardDescription = document.createElement("div");
+                            cardDescription.className = "card-text";
+                            cardDescription.innerText = `${desc} - 当前热度：${hot}`;
+
+                            cardBody.appendChild(cardTitle);
+                            cardBody.appendChild(cardDescription);
+                            bodyDiv.appendChild(cardBody);
+                            row.appendChild(bodyDiv);
+                            card.appendChild(row);
+
+                            document.getElementById(tag).appendChild(card);
+                        }
+                    }
+
+                    function parseImageArticlesRows2(result, tag) {
+                        const data = result.data;
+                        for (var i = 0; i < data.length; i ++) {
+                            var title = data[i].title;
+                            var pic = data[i].pic;
+                            var url = data[i].mobileUrl;
+                            var hot = data[i].hot;
+
+                            var card = document.createElement("div");
+                            card.className = "card";
+
+                            var row = document.createElement("div");
+                            row.className = "row no-gutters";
+
+                            var imgDiv = document.createElement("div");
+                            imgDiv.className = "col-md-2 justify-content-center";
+
+                            var img = document.createElement("img");
+                            img.src = pic;
+                            img.className = "col-md-12";
+                            imgDiv.appendChild(img);
+                            row.appendChild(imgDiv);
+                            
+                            var bodyDiv = document.createElement("div");
+                            bodyDiv.className = "col-md-10";
+
+                            var cardBody = document.createElement("div");
+                            cardBody.className = "card-body";
+
+                            var cardTitle = document.createElement("h5");
+                            cardTitle.className = "card-title";
+
+                            var cardLink = document.createElement("a");
+                            cardLink.href = url;
+                            cardLink.target = "_blank";
+                            cardLink.innerText = `#${i + 1}： ${title}`
+                            cardTitle.appendChild(cardLink);
+
+                            var cardDescription = document.createElement("div");
+                            cardDescription.className = "card-text";
+                            cardDescription.innerText = `当前热度：${hot}`;
+
+                            cardBody.appendChild(cardTitle);
+                            cardBody.appendChild(cardDescription);
+                            bodyDiv.appendChild(cardBody);
+                            row.appendChild(bodyDiv);
+                            card.appendChild(row);
+
+                            document.getElementById(tag).appendChild(card);
+                        }
+                    }
+                </script>
+            </div>
 		</div>
 	</div>
-	
+	<a href="javascript:void(0)" id="totop">🔝</a>
 </body>
 </html>
 <script>
@@ -299,4 +746,24 @@
     } else {
         getWeather();
     }
+</script>
+<script>
+    $(function () {
+        $(window).scroll(function () {
+            if($(this).scrollTop()<200){
+                $("#totop").fadeOut();
+            }else{
+                $("#totop").fadeIn();
+            }
+        });
+        $("#totop").hover(function () {
+            $(this).html("🔝");
+        }, function () {
+            $(this).html('🔝');
+        })
+        .on('click', function () {
+            $('html,body').animate({scrollTop:0},'fast');
+            return false;
+        })
+    })
 </script>
