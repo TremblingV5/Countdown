@@ -57,6 +57,165 @@
 </style>
 <script src="./static/js/jquery.min.js"></script>
 <script src="./static/js/bootstrap.min.js"></script>
+<script>
+    // 返回顶部按钮
+    $(function () {
+        $(window).scroll(function () {
+            if($(this).scrollTop()<200){
+                $("#totop").fadeOut();
+            }else{
+                $("#totop").fadeIn();
+            }
+        });
+        $("#totop").hover(function () {
+            $(this).html("🔝");
+        }, function () {
+            $(this).html('🔝');
+        })
+        .on('click', function () {
+            $('html,body').animate({scrollTop:0},'fast');
+            return false;
+        })
+    })
+</script>
+<script>
+    function saveOpenedPlatform(platform) {
+        sessionStorage.setItem("opened_platform", platform);
+    }
+
+    function isExpire(platform) {
+        const timestamp = new Date().getTime();
+        const target = localStorage.getItem(`${platform}_expire`);
+        if (target === undefined || target === null || timestamp > target) {
+            localStorage.removeItem(`${platform}_expire`);
+            localStorage.removeItem(platform);
+            return true;
+        }
+        return false;
+    }
+
+    function parseHotData(data, platform) {
+        if (platform === '哔哩哔哩') {
+            parseImageArticlesRows(data, 'bilibili');
+        }
+        if (platform === '百度') {
+            parseImageArticlesRows1(data, 'baidu');
+        }
+        if (platform === '百度贴吧') {
+            parseImageArticlesRows1(data, 'tieba');
+        }
+        if (platform === '稀土掘金') {
+            parseArticlesRows(data, 'juejin');
+        }
+        if (platform === '知乎') {
+            parseImageArticlesRows1(data, 'zhihu');
+        }
+        if (platform === 'IT之家') {
+            parseArticlesRows(data, 'ithome');
+        }
+        if (platform === '澎湃新闻') {
+            parseImageArticlesRows2(data, 'thepaper');
+        }
+        if (platform === '今日头条') {
+            parseImageArticlesRows2(data, 'toutiao');
+        }
+        if (platform === '微博热搜') {
+            parseArticlesRows1(data, 'weibo');
+        }
+        if (platform === '腾讯新闻') {
+            parseArticlesRows1(data, 'txnews');
+        }
+        return ;
+    }
+</script>
+<script>
+    /*
+     * 请求第三方接口相关代码 
+    */
+
+    function requestGet(url, op) {
+        const xhr = new XMLHttpRequest();
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                const result = JSON.parse(xhr.responseText);
+                op(result);
+            }
+        };
+        xhr.open('GET', url, true);
+        xhr.send();
+    }
+
+    function getWeather() {
+        var cookies = document.cookie.split(";");
+        var cookies = cookies[0].split(",")
+
+        const appid = cookies[0].split("=")[1];
+        const appsecret = cookies[1].split("=")[1];
+
+        const url = 'http://v1.yiketianqi.com/free/day?appid=' + appid + '&appsecret=' + appsecret + '&unescape=1';
+
+        requestGet(url, function (result) {
+            const timestamp = new Date().getTime();
+            localStorage.setItem("weather", JSON.stringify(result));
+            localStorage.setItem("weather_expire", timestamp + 1000 * 60 * 60);
+            parseWeather(result);
+        })
+    }
+
+    function loadAudio() {
+        const url = 'https://api.uomg.com/api/rand.music?sort=热歌榜&format=json';
+        requestGet(url, function (result) {
+            const audioName = result.data.name;
+            const artist = result.data.artistsname;
+            document.getElementById("audio").src = result.data.url;
+            document.getElementById("audio_img").src = result.data.picurl;
+            document.getElementById("audio_info").innerText = `听个歌吧：${audioName} - ${artist}`;
+        })
+    }
+
+    function requestHotList(platform) {
+        saveOpenedPlatform(platform);
+
+        if (!isExpire(platform)) {
+            const result = localStorage.getItem(platform);
+            const data = JSON.parse(result);
+            parseHotData(data, platform);
+            return ;
+        }
+
+        const url = `https://api.pearktrue.cn/api/dailyhot/?title=${platform}`;
+        requestGet(url, function (result) {
+            const timestamp = new Date().getTime();
+            localStorage.setItem(platform, JSON.stringify(result));
+            localStorage.setItem(`${platform}_expire`, timestamp + 1000 * 60 * 60);
+            parseHotData(result, platform);
+        })
+    }
+</script>
+<script>
+    function autoLoadHotList(platform) {
+        if (!isExpire(platform)) {
+            return ;
+        }
+
+        const url = `https://api.pearktrue.cn/api/dailyhot/?title=${platform}`;
+        requestGet(url, function (result) {
+            const timestamp = new Date().getTime();
+            localStorage.setItem(platform, JSON.stringify(result));
+            localStorage.setItem(`${platform}_expire`, timestamp + 1000 * 60 * 60);
+        })
+    }
+    autoLoadHotList('稀土掘金');
+    autoLoadHotList('哔哩哔哩');
+    autoLoadHotList('微博热搜');
+    autoLoadHotList('知乎');
+    autoLoadHotList('百度');
+    autoLoadHotList('腾讯新闻');
+    autoLoadHotList('百度贴吧');
+    autoLoadHotList('IT之家');
+    autoLoadHotList('澎湃新闻');
+    autoLoadHotList('今日头条');
+</script>
 </head>
 <body id="background">
 	<div class="container">
@@ -222,6 +381,40 @@
                         <td id="pressure"></td>
                     </tr>
                 </tbody>
+                <script>
+                    function parseWeather(result) {
+                        const backgroundElement = document.querySelector("html");
+                        // backgroundElement.style.setProperty("--background-image", "url('./static/imgs/" + result.wea_img + ".jpg')");
+                        document.getElementById("update_time").innerHTML = result.update_time;
+                        document.getElementById("city").innerHTML = result.city;
+                        document.getElementById("humidity").innerHTML = result.humidity;
+                        document.getElementById("air").innerHTML = result.air;
+                        document.getElementById("wea").innerHTML = result.wea;
+                        document.getElementById("tem").innerHTML = result.tem;
+                        document.getElementById("tem_day").innerHTML = result.tem_day;
+                        document.getElementById("tem_night").innerHTML = result.tem_night;
+                        document.getElementById("win").innerHTML = result.win;
+                        document.getElementById("win_speed").innerHTML = result.win_speed;
+                        document.getElementById("win_meter").innerHTML = result.win_meter;
+                        document.getElementById("pressure").innerHTML = result.pressure;
+                    }
+                
+                    
+                
+                    var weather_expire = localStorage.getItem("weather_expire");
+                    var now = new Date().getTime();
+                    if (weather_expire === undefined || weather_expire === null || weather_expire < now) {
+                        localStorage.removeItem("weather");
+                    }
+                
+                    var weather = localStorage.getItem("weather");
+                    if (weather != null) {
+                        var result = JSON.parse(weather);
+                        parseWeather(result);
+                    } else {
+                        getWeather();
+                    }
+                </script>
             </table>
             <div id="audio_player" class="col-sm-12">
                 <img id="audio_img" class="col-sm-2" style="float: left;" />
@@ -236,21 +429,7 @@
                 </div>
                 <script>
                     loadAudio();
-                    function loadAudio() {
-                        const xhr = new XMLHttpRequest();
-                        xhr.onreadystatechange = function() {
-                            if (xhr.readyState === 4 && xhr.status === 200) {
-                                const result = JSON.parse(xhr.responseText);
-                                const audioName = result.data.name;
-                                const artist = result.data.artistsname;
-                                document.getElementById("audio").src = result.data.url;
-                                document.getElementById("audio_img").src = result.data.picurl;
-                                document.getElementById("audio_info").innerText = `听个歌吧：${audioName} - ${artist}`;
-                            }
-                        };
-                        xhr.open('GET', 'https://api.uomg.com/api/rand.music?sort=热歌榜&format=json', true);
-                        xhr.send();
-                    }
+                    
                     function reloadAudio() {
                         loadAudio();
                         document.getElementById("audio").play();
@@ -260,52 +439,52 @@
             <div id="hot" class="card col-sm-12" style="padding-top: 10px;">
                 <ul class="nav nav-tabs" id="myTab" role="tablist" style="padding-top: 10px;">
                     <li class="nav-item active" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#juejin" type="button" role="tab" aria-controls="juejin" onclick="request('稀土掘金')" aria-selected="true">
+                        <button class="nav-link" id="juejin-tab" data-toggle="tab" data-target="#juejin" type="button" role="tab" aria-controls="juejin" onclick="requestHotList('稀土掘金')" aria-selected="true">
                           稀土掘金热榜
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="home-tab" data-toggle="tab" data-target="#bilibili" type="button" role="tab" aria-controls="bilibili" onclick="request('哔哩哔哩')" aria-selected="false">
+                        <button class="nav-link" id="bilibili-tab" data-toggle="tab" data-target="#bilibili" type="button" role="tab" aria-controls="bilibili" onclick="requestHotList('哔哩哔哩')" aria-selected="false">
                             B站热搜
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#weibo" type="button" role="tab" aria-controls="weibo" onclick="request('微博热搜')" aria-selected="false">
+                        <button class="nav-link" id="weibo-tab" data-toggle="tab" data-target="#weibo" type="button" role="tab" aria-controls="weibo" onclick="requestHotList('微博热搜')" aria-selected="false">
                             微博热搜
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#zhihu" type="button" role="tab" aria-controls="zhihu" onclick="request('知乎')" aria-selected="false">
+                        <button class="nav-link" id="zhihu-tab" data-toggle="tab" data-target="#zhihu" type="button" role="tab" aria-controls="zhihu" onclick="requestHotList('知乎')" aria-selected="false">
                             知乎热搜
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#baidu" type="button" role="tab" aria-controls="baidu" onclick="request('百度')" aria-selected="false">
+                        <button class="nav-link" id="baidu-tab" data-toggle="tab" data-target="#baidu" type="button" role="tab" aria-controls="baidu" onclick="requestHotList('百度')" aria-selected="false">
                           百度热搜
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#txnews" type="button" role="tab" aria-controls="txnews" onclick="request('腾讯新闻')" aria-selected="false">
+                        <button class="nav-link" id="txnews-tab" data-toggle="tab" data-target="#txnews" type="button" role="tab" aria-controls="txnews" onclick="requestHotList('腾讯新闻')" aria-selected="false">
                           腾讯新闻热榜
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#tieba" type="button" role="tab" aria-controls="tieba" onclick="request('百度贴吧')" aria-selected="false">
+                        <button class="nav-link" id="tieba-tab" data-toggle="tab" data-target="#tieba" type="button" role="tab" aria-controls="tieba" onclick="requestHotList('百度贴吧')" aria-selected="false">
                           贴吧热搜
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#ithome" type="button" role="tab" aria-controls="ithome" onclick="request('IT之家')" aria-selected="false">
+                        <button class="nav-link" id="ithome-tab" data-toggle="tab" data-target="#ithome" type="button" role="tab" aria-controls="ithome" onclick="requestHotList('IT之家')" aria-selected="false">
                           IT之家热榜
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#thepaper" type="button" role="tab" aria-controls="thepaper" onclick="request('澎湃新闻')" aria-selected="false">
+                        <button class="nav-link" id="thepaper-tab" data-toggle="tab" data-target="#thepaper" type="button" role="tab" aria-controls="thepaper" onclick="requestHotList('澎湃新闻')" aria-selected="false">
                           澎湃新闻热榜
                         </button>
                     </li>
                     <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#toutiao" type="button" role="tab" aria-controls="toutiao" onclick="request('今日头条')" aria-selected="false">
+                        <button class="nav-link" id="toutiao-tab" data-toggle="tab" data-target="#toutiao" type="button" role="tab" aria-controls="toutiao" onclick="requestHotList('今日头条')" aria-selected="false">
                           今日头条热榜
                         </button>
                     </li>
@@ -352,98 +531,8 @@
                     </div>
                 </div>
                 <script>
-                    function isExpire(platform) {
-                        const timestamp = new Date().getTime();
-                        const target = localStorage.getItem(`${platform}_expire`);
-                        if (target === undefined || target === null || timestamp > target) {
-                            localStorage.removeItem(`${platform}_expire`);
-                            localStorage.removeItem(platform);
-                            return true;
-                        }
-                        return false;
-                    }
-
-                    function request(platform) {
-                        if (!isExpire(platform)) {
-                            const result = localStorage.getItem(platform);
-                            const data = JSON.parse(result);
-                            if (platform === '哔哩哔哩') {
-                                parseImageArticlesRows(data, 'bilibili');
-                            }
-                            if (platform === '百度') {
-                                parseImageArticlesRows1(data, 'baidu');
-                            }
-                            if (platform === '百度贴吧') {
-                                parseImageArticlesRows1(data, 'tieba');
-                            }
-                            if (platform === '稀土掘金') {
-                                parseArticlesRows(data, 'juejin');
-                            }
-                            if (platform === '知乎') {
-                                parseImageArticlesRows1(data, 'zhihu');
-                            }
-                            if (platform === 'IT之家') {
-                                parseArticlesRows(data, 'ithome');
-                            }
-                            if (platform === '澎湃新闻') {
-                                parseImageArticlesRows2(data, 'thepaper');
-                            }
-                            if (platform === '今日头条') {
-                                parseImageArticlesRows2(data, 'toutiao');
-                            }
-                            if (platform === '微博热搜') {
-                                parseArticlesRows1(data, 'weibo');
-                            }
-                            if (platform === '腾讯新闻') {
-                                parseArticlesRows1(data, 'txnews');
-                            }
-                            return ;
-                        }
-
-                        const xhr = new XMLHttpRequest();
-                        xhr.onreadystatechange = function() {
-                            if (xhr.readyState === 4 && xhr.status === 200) {
-                                const result = JSON.parse(xhr.responseText);
-                                const timestamp = new Date().getTime();
-                                localStorage.setItem(platform, JSON.stringify(result));
-                                localStorage.setItem(`${platform}_expire`, timestamp + 1000 * 60 * 60);
-                                if (platform === '哔哩哔哩') {
-                                    parseImageArticlesRows(result, 'bilibili');
-                                }
-                                if (platform === '百度') {
-                                    parseImageArticlesRows1(result, 'baidu');
-                                }
-                                if (platform === '百度贴吧') {
-                                    parseImageArticlesRows1(result, 'tieba');
-                                }
-                                if (platform === '稀土掘金') {
-                                    parseArticlesRows(result, 'juejin');
-                                }
-                                if (platform === '知乎') {
-                                    parseImageArticlesRows1(result, 'zhihu');
-                                }
-                                if (platform === 'IT之家') {
-                                    parseArticlesRows(result, 'ithome');
-                                }
-                                if (platform === '澎湃新闻') {
-                                    parseImageArticlesRows2(result, 'thepaper');
-                                }
-                                if (platform === '今日头条') {
-                                    parseImageArticlesRows2(result, 'toutiao');
-                                }
-                                if (platform === '微博热搜') {
-                                    parseArticlesRows1(result, 'weibo');
-                                }
-                                if (platform === '腾讯新闻') {
-                                    parseArticlesRows1(result, 'txnews');
-                                }
-                            }
-                        };
-                        xhr.open('GET', `https://api.pearktrue.cn/api/dailyhot/?title=${platform}`, true);
-                        xhr.send();
-                    }
-
                     function parseArticlesRows(result, tag) {
+                        document.getElementById(tag).innerHTML = "";
                         const data = result.data;
                         for (var i = 0; i < data.length; i ++) {
                             var title = data[i].title;
@@ -486,6 +575,7 @@
                     }
 
                     function parseArticlesRows1(result, tag) {
+                        document.getElementById(tag).innerHTML = "";
                         const data = result.data;
                         for (var i = 0; i < data.length; i ++) {
                             var title = data[i].title;
@@ -529,6 +619,7 @@
                     }
 
                     function parseImageArticlesRows(result, tag) {
+                        document.getElementById(tag).innerHTML = "";
                         const data = result.data;
                         for (var i = 0; i < data.length; i ++) {
                             var title = data[i].title;
@@ -584,6 +675,7 @@
                     }
 
                     function parseImageArticlesRows1(result, tag) {
+                        document.getElementById(tag).innerHTML = "";
                         const data = result.data;
                         for (var i = 0; i < data.length; i ++) {
                             var title = data[i].title;
@@ -637,6 +729,7 @@
                     }
 
                     function parseImageArticlesRows2(result, tag) {
+                        document.getElementById(tag).innerHTML = "";
                         const data = result.data;
                         for (var i = 0; i < data.length; i ++) {
                             var title = data[i].title;
@@ -687,6 +780,44 @@
                             document.getElementById(tag).appendChild(card);
                         }
                     }
+
+                    function autoOpenPlatform(platform) {
+                        if (platform === '哔哩哔哩') {
+                            document.getElementById('bilibili' + '-tab').click();
+                        }
+                        if (platform === '百度') {
+                            document.getElementById('baidu' + '-tab').click();
+                        }
+                        if (platform === '百度贴吧') {
+                            document.getElementById('tieba' + '-tab').click();
+                        }
+                        if (platform === '稀土掘金') {
+                            document.getElementById('juejin' + '-tab').click();
+                        }
+                        if (platform === '知乎') {
+                            document.getElementById('zhihu' + '-tab').click();
+                        }
+                        if (platform === 'IT之家') {
+                            document.getElementById('ithome' + '-tab').click();
+                        }
+                        if (platform === '澎湃新闻') {
+                            document.getElementById('thepaper' + '-tab').click();
+                        }
+                        if (platform === '今日头条') {
+                            document.getElementById('toutiao' + '-tab').click();
+                        }
+                        if (platform === '微博热搜') {
+                            document.getElementById('weibo' + '-tab').click();
+                        }
+                        if (platform === '腾讯新闻') {
+                            document.getElementById('txnews' + '-tab').click();
+                        }
+                        return ;
+                    }
+                    const opened_platform = sessionStorage.getItem('opened_platform');
+                    if (opened_platform !== undefined && opened_platform !== null) {
+                        autoOpenPlatform(opened_platform);
+                    }
                 </script>
             </div>
 		</div>
@@ -694,76 +825,3 @@
 	<a href="javascript:void(0)" id="totop">🔝</a>
 </body>
 </html>
-<script>
-    function parseWeather(result) {
-        const backgroundElement = document.querySelector("html");
-        // backgroundElement.style.setProperty("--background-image", "url('./static/imgs/" + result.wea_img + ".jpg')");
-        document.getElementById("update_time").innerHTML = result.update_time;
-        document.getElementById("city").innerHTML = result.city;
-        document.getElementById("humidity").innerHTML = result.humidity;
-        document.getElementById("air").innerHTML = result.air;
-        document.getElementById("wea").innerHTML = result.wea;
-        document.getElementById("tem").innerHTML = result.tem;
-        document.getElementById("tem_day").innerHTML = result.tem_day;
-        document.getElementById("tem_night").innerHTML = result.tem_night;
-        document.getElementById("win").innerHTML = result.win;
-        document.getElementById("win_speed").innerHTML = result.win_speed;
-        document.getElementById("win_meter").innerHTML = result.win_meter;
-        document.getElementById("pressure").innerHTML = result.pressure;
-    }
-
-    function getWeather() {
-        var cookies = document.cookie.split(";");
-        var cookies = cookies[0].split(",")
-
-        const appid = cookies[0].split("=")[1];
-        const appsecret = cookies[1].split("=")[1];
-
-        const xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === 4 && xhr.status === 200) {
-                const result = JSON.parse(xhr.responseText);
-                const timestamp = new Date().getTime();
-                localStorage.setItem("weather", JSON.stringify(result));
-                localStorage.setItem("weather_expire", timestamp + 1000 * 60 * 60);
-                parseWeather(result);
-            }
-        };
-        xhr.open('GET', 'http://v1.yiketianqi.com/free/day?appid=' + appid + '&appsecret=' + appsecret + '&unescape=1', true);
-        xhr.send();
-    }
-
-    var weather_expire = localStorage.getItem("weather_expire");
-    var now = new Date().getTime();
-    if (weather_expire === undefined || weather_expire === null || weather_expire < now) {
-        localStorage.removeItem("weather");
-    }
-
-    var weather = localStorage.getItem("weather");
-    if (weather != null) {
-        var result = JSON.parse(weather);
-        parseWeather(result);
-    } else {
-        getWeather();
-    }
-</script>
-<script>
-    $(function () {
-        $(window).scroll(function () {
-            if($(this).scrollTop()<200){
-                $("#totop").fadeOut();
-            }else{
-                $("#totop").fadeIn();
-            }
-        });
-        $("#totop").hover(function () {
-            $(this).html("🔝");
-        }, function () {
-            $(this).html('🔝');
-        })
-        .on('click', function () {
-            $('html,body').animate({scrollTop:0},'fast');
-            return false;
-        })
-    })
-</script>

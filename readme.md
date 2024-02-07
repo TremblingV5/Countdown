@@ -30,7 +30,7 @@
 
 **希望各位工作中能多点乐趣，工作也能早点做完做好。**
 
-## 功能配置
+## 功能及配置
 
 ### 自定义域名
 
@@ -40,3 +40,11 @@
 
 1. 在此[网站](https://tianqiapi.com/index/doc?version=day)注册账号，并获取appid和appsecret
 2. 在在`./nginx/conf.d/default.conf`中，配置`add_header Set-Cookie`的内容为`appid={appid},appsecret={appsecret}; path=/`
+
+### 随机听歌
+
+数据来源于第三方接口，请求的数据为网易云音乐热榜。可以点击“换一首听”按钮去加载一首其他随机歌曲。
+
+### 热榜聚合
+
+数据来源于第三方接口，数据存储在`localStorage`中，请求到的数据会保存1个小时。
