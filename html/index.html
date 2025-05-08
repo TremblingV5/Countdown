@@ -147,7 +147,7 @@
 
     function getWeather() {
         var cookies = document.cookie.split(";");
-        var cookies = cookies[0].split(",")
+        cookies = cookies[0].split(",");
 
         const appid = cookies[0].split("=")[1];
         const appsecret = cookies[1].split("=")[1];
@@ -322,9 +322,9 @@
 
 							elt2.innerHTML = nowYear + " 年 " + nowMonth + " 月 " + nowDay + " 日 ";
 							if (holiday != null){
-								elt.innerHTML = "不是吧阿Sir？" + holiday + "还上班？";
+								elt.innerHTML = "不是吧？" + holiday + "还上班？";
 							} else if ( day == 6 || day == 0){
-								elt.innerHTML = "不是吧阿Sir？" + weeks[day] + "还上班？";
+								elt.innerHTML = "不是吧？" + weeks[day] + "还上班？";
 							} else if ((o<0&&m<0&&s<0)){
 								elt.innerHTML = "你已经下班了，为什么还不回家？";
 							} else {
