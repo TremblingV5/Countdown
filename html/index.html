@@ -437,6 +437,155 @@
                 </script>
             </div>
             <div id="hot" class="card col-sm-12" style="padding-top: 10px;">
+                <div class="btn-group" role="group" aria-label="算卦操作">
+                    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#chouqianModal">
+                        抽签算卦
+                    </button>
+                    <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#caixiaorenModal">
+                        踩小人
+                    </button>
+                </div>
+                
+                <!-- 抽签算卦 Modal -->
+                <div class="modal fade" id="chouqianModal" tabindex="-1" role="dialog" aria-labelledby="chouqianModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="chouqianModalLabel">线上灵签</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                如何使用：
+                                <br />
+                                1. 诚信默念您的姓名、地址以及所求何事
+                                <br />
+                                2. 点击下方"求签"按钮
+                                <br />
+                                3. 阅读所求签文的内容
+                                <br />
+                                <img id="divineImage" alt="灵签图片" style="width: 100%; margin-top: 10px; display: none;">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-success" onclick="drawLot()">求签</button>
+                                <!-- <a href="#interpretModal" data-toggle="modal" data-target="#interpretModal" class="btn btn-info">解签参考</a> -->
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                            </div>
+
+                            <script>
+                                function drawLot() {
+                                    const randomNum = Math.floor(Math.random() * 60) + 1;
+                                    console.log(`抽到的签号: ${randomNum}`);
+                                    const imgElement = document.getElementById('divineImage');
+                                    imgElement.src = `https://www.8327777.org.tw/images/divine/${randomNum}.jpg`;
+                                    imgElement.style.display = 'block';
+
+                                    // 设置解签模态框的iframe地址
+                                    document.querySelector('#interpretModal iframe').src = `https://www.8327777.org.tw/divine${randomNum}.asp`;
+                                }
+                            </script>
+
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 解签 Modal -->
+                <div class="modal fade" id="interpretModal" tabindex="-1" role="dialog" aria-labelledby="interpretModalLabel" aria-hidden="true">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="interpretModalLabel">解签参考</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <iframe id="interpretIframe" src="" style="width: 100%; height: 500px; border: none;"></iframe>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 踩小人 Modal -->
+                <div class="modal fade" id="caixiaorenModal" tabindex="-1" role="dialog" aria-labelledby="caixiaorenModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="caixiaorenModalLabel">踩小人</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body" id="modalBody">
+                                <p>你想踩谁？输入ta的名字</p>
+                                <input type="text" id="targetName" class="form-control" placeholder="输入名字">
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" onclick="confirmStepOn()">确认</button>
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                            </div>
+
+                            <script>
+                            function confirmStepOn() {
+                                const name = document.getElementById('targetName').value;
+                                const modalBody = document.getElementById('modalBody');
+                                
+                                if (name) {
+                                    // 清空modal-body内容
+                                    modalBody.innerHTML = '';
+                                    
+                                    // 创建img元素并设置src
+                                    const img = document.createElement('img');
+                                    img.src = 'static/imgs/step.gif';
+                                    img.style.width = '100%';
+                                    img.style.height = '100%';
+                                    img.style.objectFit = 'cover';
+                                    
+                                    // 创建用于显示名字的h1元素
+                                    const nameH1 = document.createElement('h1');
+                                    nameH1.textContent = name;
+                                    nameH1.style.position = 'absolute';
+                                    nameH1.style.bottom = '0';
+                                    nameH1.style.left = '25%';  // 左侧留出30%的空白
+                                    nameH1.style.maxWidth = '50%';
+                                    nameH1.style.backgroundColor = 'rgba(255, 255, 255, 0.7)';
+                                    nameH1.style.padding = '5px';
+                                    nameH1.style.fontSize = '24px';  // 字号调大
+                                    nameH1.style.whiteSpace = 'nowrap';
+                                    nameH1.style.overflow = 'hidden';
+                                    nameH1.style.textOverflow = 'ellipsis';
+                                    
+                                    // 定义6种常见颜色（排除黑色和白色）
+                                    const colors = ['red', 'blue', 'green', 'purple', 'orange', 'cyan'];
+                                    let colorIndex = 0;
+                                    
+                                    // 每500毫秒改变一次文字颜色
+                                    setInterval(() => {
+                                        nameH1.style.color = colors[colorIndex];
+                                        colorIndex = (colorIndex + 1) % colors.length;
+                                    }, 350);
+                                    
+                                    // 设置modal-body为相对定位以便绝对定位子元素
+                                    modalBody.style.position = 'relative';
+                                    modalBody.style.width = '100%';
+                                    modalBody.style.height = '100%';
+                                    
+                                    // 将img和nameH1添加到modal-body中
+                                    modalBody.appendChild(img);
+                                    modalBody.appendChild(nameH1);
+                                } else {
+                                    alert('请输入名字');
+                                }
+                            }
+                            </script>
+                        </div>
+                    </div>
+                </div>
+                
                 <ul class="nav nav-tabs" id="myTab" role="tablist" style="padding-top: 10px;">
                     <li class="nav-item active" role="presentation">
                         <button class="nav-link" id="juejin-tab" data-toggle="tab" data-target="#juejin" type="button" role="tab" aria-controls="juejin" onclick="requestHotList('稀土掘金')" aria-selected="true">
